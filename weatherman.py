@@ -9,8 +9,6 @@ max_humidity_dict = {}
 complete_date_dict = {}
 lines = []
 
-
-
 def max_temp(temp_ist=[]):  # This func will return the Monthly Maximum Temperature and Date              #MAX TEMPERATURE
     month_max_temp= []
     max_list = []
@@ -50,7 +48,6 @@ def min_temp(temp_ist=[]):  # This func will return the Monthly Minimum Temperat
                 month_min_temp.append(temp_min)
                 break
         return month_min_temp
-
 
 def max_humidity(humidity_ist=[]):  # This func will return the Monthly Maximum Humidity and Date                #MAX HUMIDITY
     month_min_temp= []
