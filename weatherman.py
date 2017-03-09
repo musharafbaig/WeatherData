@@ -1,214 +1,206 @@
+"""
+
+This project will display the results from weather data file
+
+which are stored in project directory.
+
+"""
+
+import csv
 import glob
 
-m = []
-a = []
-max_temp_dict = {}
-min_temp_dict = {}
-min_humidity_dict = {}
-max_humidity_dict = {}
-complete_date_dict = {}
-lines = []
+max_temp_dict = {}  # Monthly maximum temp will store e.g 1996:45
+min_temp_dict = {}  # Monthly minimum temp will store e.g 1996:3
+min_humidity_dict = {}  # Monthly minimum humidity will store e.g 1996:31
+max_humidity_dict = {}  # Monthly maximum temp will store e.g 1996:100
+complete_date_dict = {}  # Complete date will store e.g 1996:1996-2-3
 
 
+def annual_report():
+    """
+    It will show the annual report to the user
 
-def max_temp(temp_ist=[]):  # This func will return the Monthly Maximum Temperature and Date              #MAX TEMPERATURE
-    month_max_temp= []
-    max_list = []
+    """
 
-    for i in range(len(temp_ist)):
-        max_list.append(temp_ist[i][1])
-        max_list = list(set(filter(None, max_list)))
-    if not max_list:
-        return 0
-    else:
-        max_list = [int(i) for i in max_list]
-        maximum_num = max(max_list)
-        temp_max = str(maximum_num)
-        for item in range(len(temp_ist)):
-            if temp_ist[item][1] == temp_max:
-                month_max_temp.append(temp_ist[item][0])
-                month_max_temp.append(temp_max)
-                break
-        return month_max_temp
-
-
-def min_temp(temp_ist=[]):  # This func will return the Monthly Minimum Temperature and Date           #MIN TEMPERATURE
-    month_min_temp= []
-    min_list = []
-    for i in range(len(temp_ist)):
-        min_list.append(temp_ist[i][3])
-        min_list = list(set(filter(None, min_list )))
-    if not min_list:
-        return 1000
-    else:
-        min_list = [int(i) for i in min_list ]
-        minimum_num = min(min_list )
-        temp_min = str(minimum_num)
-        for item in range(len(temp_ist)):
-            if temp_ist[item][3] == temp_min:
-                month_min_temp.append(temp_ist[item][0])
-                month_min_temp.append(temp_min)
-                break
-        return month_min_temp
-
-
-def max_humidity(humidity_ist=[]):  # This func will return the Monthly Maximum Humidity and Date                #MAX HUMIDITY
-    month_min_temp= []
-    min_list = []
-    for i in range(len(humidity_ist)):
-        min_list.append(humidity_ist[i][7])
-        min_list = list(set(filter(None, min_list )))
-    if not min_list:
-        return 0
-    else:
-        min_list = [int(i) for i in min_list ]
-        minimum_num = max(min_list )
-        temp_min = str(minimum_num)
-        for item in range(len(humidity_ist)):
-            if humidity_ist[item][7] == temp_min:
-                month_min_temp.append(humidity_ist[item][0])
-                month_min_temp.append(temp_min)
-                break
-        return month_min_temp
-
-
-def min_humidity(humidity_ist=[]):  # This func will return the Monthly Minimum Humidity and Date                #MIN HUMIDITY
-    month_min_temp= []
-    min_list = []
-
-    for i in range(len(humidity_ist)):
-        min_list.append(humidity_ist[i][9])
-        min_list = list(set(filter(None, min_list )))
-
-    if not min_list:
-        return 10000
-    else:
-        min_list = [int(i) for i in min_list ]
-        minimum_num = min(min_list )
-        temp_min = str(minimum_num)
-        for item in range(len(humidity_ist)):
-            if humidity_ist[item][9] == temp_min:
-                month_min_temp.append(humidity_ist[item][0])
-                month_min_temp.append(temp_min)
-                break
-        return month_min_temp
+    print(str("Year").rjust(7),
+          str("MAXTemp").rjust(7),
+          str("MINTemp").rjust(7),
+          str("MAXHumidity").rjust(7),
+          str("MINHumidity").rjust(7),
+          "[Report#1][Annual Report]".rjust(8)
+          )
+    print("-"*80)
+    # iterate over dictionary key @Year e.g 1996 and display it's value.Uses same key for all dictionaries
+    for i in complete_date_dict.keys():
+        print(str(i).rjust(6),
+              str(max_temp_dict[i]).rjust(6),
+              str(min_temp_dict[i]).rjust(6),
+              str(max_humidity_dict[i]).rjust(8),
+              str(min_humidity_dict[i]).rjust(9)
+              )
 
 
 def year_hottest_days():
-    print("Year      Date       Temp       [Report#2][Hottest Days]")
-    print("-"*80)
-    for i in max_temp_dict.keys():
-        print("{0}    {1}    {2}".format(i,complete_date_dict[i],max_temp_dict[i]))
+    """
+    it will show the the Hottest days with year and complete date
 
-def annual_report():
-    print("Year    MAXTemp    MINTemp    MAXHumidity    MINHumidity       [Report#1][Annual Report]")
+    """
+    print(str("Year").rjust(4),
+          str("Date").rjust(10),
+          str("Temp").rjust(11),
+          "[Report#2][Hottest Days Report]".rjust(8)
+          )
     print("-"*80)
-    for i in max_temp_dict.keys():
-        print("{0}        {1}       {2}            {3}           {4}".format(i,max_temp_dict[i],min_temp_dict[i],max_humidity_dict[i],min_humidity_dict[i]))
+    # iterate over dictionary key @Year e.g 1996 and display it's value.Uses same key for two dictionaries
+    # e.g 1996:1996-12-1 and 1996:49
+    for i in complete_date_dict.keys():
+        print(str(i).rjust(4),
+              str(complete_date_dict[i]).rjust(12),
+              str(max_temp_dict[i]).rjust(8)
+              )
 
-# path =r"C:\Users\User\PycharmProjects\WeatherData\*.txt"
-def main_function(path):
-    files = glob.glob(path)
+
+def max_temp_func(temp_list, date_list):
+    """
+    This func will return the Monthly Maximum Temperature and Date
+    :param temp_list: one month temperatures
+    :param date_list: temperatures with complete date
+    :return: maximum temperature with complete date in list
+    """
+    # MAX TEMPERATURE
+    if len(temp_list) == 0:
+        return 0
+    if len(temp_list) == 1:
+        return list(zip(temp_list, date_list))
+    return list(max(zip(temp_list, date_list)))
+
+
+def min_func(list_1):
+    """
+    :param list_1: list to apply minimum function
+    :return: string minimum number
+    """
+    if len(list_1) == 0:
+        return 100
+    if len(list_1) == 1:
+        return list_1
+    minimum = min(map(int,list_1))
+    return str(minimum)
+
+
+def max_finder_func(list_1):
+    """
+
+    :param list_1: list to apply max function
+    :return: string minimum number
+    """
+    if len(list_1) == 0:
+        return 0
+    if len(list_1) == 1:
+        return list_1
+    maximum = max(map(int, list_1))
+    return str(maximum)
+
+
+def main_function():
+    """
+    This is Main function
+
+    """
+    files = glob.glob("*.txt")
     for file in files:
+        max_temp_reader = []
+        max_temp_date_reader = []
+        min_temp_reader = []
+        max_humidity_reader = []
+        min_humidity_reader = []
+
         with open(file) as f:
-            f.__next__()
-            f.__next__()
-            lines = f.readlines()
-            lines = lines[:-1]
-            lines = [l.strip('\n') for l in lines]
-            # print(lines)
-            a = []
-            for i in lines:
-                a.append(i.split(','))
-                lines = a
+            # skip first and last line in file
+            read = csv.DictReader(f.readlines()[1:-1])
+            # iterate over a file lines
+            for row in read:
+                if row:
+                    # if row is not empty
+                    if row['Max TemperatureC']:
+                        max_temp_reader.append(row['Max TemperatureC'])
+                        min_temp_reader.append(row['Min TemperatureC'])
+                        max_humidity_reader.append(row['Max Humidity'])
+                        min_humidity_reader.append(row[' Min Humidity'])
+                        # if date format is PKT or PKST
+                        if 'PKT' in row.keys():
+                            max_temp_date_reader.append(row['PKT'])
+                        else:
+                            max_temp_date_reader.append(row['PKST'])
+        # if file is empty iterate over next file
+        if not max_temp_reader:
+            continue
+        # these functions will return required results
+        max_list = max_temp_func(max_temp_reader, max_temp_date_reader)
+        min_list = min_func(min_temp_reader)
+        min_humidity = min_func(min_humidity_reader)
+        max_humidity = max_finder_func(max_humidity_reader)
+        # max_list = [32,1996-12-1]
+        max_temp = max_list[0]
+        date = max_list[1]
+        # Split the date so that we can use Year e.g 1996 as a key
+        year = str(date)[:4]
 
-        res_from_max_temp = max_temp(lines)
-        res_from_min_temp = min_temp(lines)
-        res_from_min_humidity = min_humidity(lines)
-        res_from_max_humidity = max_humidity(lines)
+        if year in complete_date_dict.keys():
+            # If key:Year is already store in dictionary. So data of month is already stored
 
-        lines = []
-        if res_from_max_temp != 0:
-            date = res_from_max_temp[0]
-            year = str(date)[:4]  # year will be the key in both dictionary; 1996:max_temp, 1996:1996-2-1
-            month_max_temp = res_from_max_temp[1]
-            if year in max_temp_dict.keys():
-                i = int(month_max_temp)
-                j = int(max_temp_dict[year])
-                if i > j:
-                    max_temp_dict[year] = month_max_temp
-                    complete_date_dict[year] = date
-                else:
-                    pass
-            else:
-                max_temp_dict[year] = month_max_temp
+            if int(max_temp) > int(max_temp_dict[year]):
+                # Compare the NewTemp with existed Temp
+                # If Temp is greater than existed Temp.
+                # Replace it with Temp and Date in both dictionaries
+                # Remember: Year will be the key in all dictionaries
+                max_temp_dict[year] = max_temp
                 complete_date_dict[year] = date
+
+            if int(min_list) < int(min_temp_dict[year]):
+                # Compare the NewTemp with existed Temp
+                # If NewTemp is less than existed Temp.
+                # Replace it with NewTemp
+                min_temp_dict[year] = min_list
+
+            if int(max_humidity) > int(max_humidity_dict[year]):
+                # Compare the NewHumidity with existed Humidity
+                # If NewHumidity is greater than existed Humidity.
+                # Replace it with NewHumidity
+                max_humidity_dict[year] = max_humidity
+
+            if int(min_humidity) < int(min_humidity_dict[year]):
+                # Compare the NewHumidity with existed Humidity
+                # If NewHumidity is less than existed Humidity.
+                # Replace it with NewHumidity
+                min_humidity_dict[year] = min_humidity
+
+            # after all the condition continue
+            continue
+
         else:
-            pass
+            # If key is not already exists.Add it in dictionary with Year as a key
+            max_temp_dict[year] = max_temp
+            complete_date_dict[year] = date
+            min_temp_dict[year] = str(min_list)
+            max_humidity_dict[year] = str(max_humidity)
+            min_humidity_dict[year] = str(min_humidity)
 
-        if res_from_min_temp != 1000:
-            date = res_from_min_temp[0]
-            year = str(date)[:4]  # year will be the key in dictionary; 1996:min_temp
-            month_min_temp = res_from_min_temp[1]
-            if year in min_temp_dict.keys():
-                i = int(month_min_temp)
-                j = int(min_temp_dict[year])
-                if i < j:
-                    min_temp_dict[year] = month_min_temp
-                else:
-                    pass
-            else:
-                min_temp_dict[year] = month_min_temp
-        else:
-            pass
 
-        if res_from_min_humidity != 10000:
-            date = res_from_min_humidity[0]
-            year = str(date)[:4]  # year will be the key in dictionary; 1996:min_humidity
-            month_min_humifity = res_from_min_humidity[1]
-            if year in min_humidity_dict.keys():
-                i = int(month_min_humifity)
-                j = int(min_humidity_dict[year])
-                if i < j:
-                    min_humidity_dict[year] = month_min_humifity
-                else:
-                    pass
-            else:
-                min_humidity_dict[year] = month_min_humifity
-        else:
-            pass
+report_type = str(input("For Annual Report :1\n"
+                        "For Hottest Days Report:2\n"
+                        "Enter Report Type: "
+                        )
+                  )
 
-        if res_from_max_humidity != 0:
-            date = res_from_max_humidity[0]
-            year = str(date)[:4]  # year will be the key in dictionary; 1996:min_humidity
-            month_max_humifity = res_from_max_humidity[1]
-            if year in max_humidity_dict.keys():
-                i = int(month_max_humifity)
-                j = int(max_humidity_dict[year])
-                if i < j:
-                    max_humidity_dict[year] = month_max_humifity
-                else:
-                    pass
-            else:
-                max_humidity_dict[year] = month_max_humifity
-        else:
-            pass
-
-# MAIN PROGRAM
-
-#C:\Users\User\PycharmProjects\WeatherData\*.txt
-report_type = str(input("For Annual Report :1\nFor Hottest Days Report:2\nEnter Report Type: "))
-
-if int(report_type )== 2:
-    path = input("Enter Dir: ")
-    main_function(path)
+# Take input from user. What type of report to display
+if int(report_type) == 2:
+    main_function()
     year_hottest_days()
-elif int(report_type )== 1:
-    path = input("Path Data_Dir: ")
-    main_function(path)
+
+elif int(report_type) == 1:
+    main_function()
     annual_report()
+
 else:
-    print("weatherman[report# ] [data_dir]")
-
-
-
+    print("Usage:weatherman[report# ][data_dir]")
