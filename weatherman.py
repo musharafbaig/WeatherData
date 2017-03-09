@@ -109,11 +109,11 @@ def main_function():
     """
     files = glob.glob("*.txt")
     for file in files:
-        MAXTemp = []
-        MAXTempDate = []
-        MINTemp = []
-        MAXHumidity = []
-        MINHumidity = []
+        max_temp_reader = []
+        max_temp_date_reader = []
+        min_temp_reader = []
+        max_humidity_reader = []
+        min_humidity_reader = []
 
         with open(file) as f:
             # skip first and last line in file
@@ -123,23 +123,23 @@ def main_function():
                 if row:
                     # if row is not empty
                     if row['Max TemperatureC']:
-                        MAXTemp.append(row['Max TemperatureC'])
-                        MINTemp.append(row['Min TemperatureC'])
-                        MAXHumidity.append(row['Max Humidity'])
-                        MINHumidity.append(row[' Min Humidity'])
+                        max_temp_reader.append(row['Max TemperatureC'])
+                        min_temp_reader.append(row['Min TemperatureC'])
+                        max_humidity_reader.append(row['Max Humidity'])
+                        min_humidity_reader.append(row[' Min Humidity'])
                         # if date format is PKT or PKST
                         if 'PKT' in row.keys():
-                            MAXTempDate.append(row['PKT'])
+                            max_temp_date_reader.append(row['PKT'])
                         else:
-                            MAXTempDate.append(row['PKST'])
+                            max_temp_date_reader.append(row['PKST'])
         # if file is empty iterate over next file
-        if not MAXTemp:
+        if not max_temp_reader:
             continue
         # these functions will return required results
-        max_list = max_temp_func(MAXTemp, MAXTempDate)
-        min_list = min_func(MINTemp)
-        min_humidity = min_func(MINHumidity)
-        max_humidity = max_finder_func(MAXHumidity)
+        max_list = max_temp_func(max_temp_reader, max_temp_date_reader)
+        min_list = min_func(min_temp_reader)
+        min_humidity = min_func(min_humidity_reader)
+        max_humidity = max_finder_func(max_humidity_reader)
         # max_list = [32,1996-12-1]
         max_temp = max_list[0]
         date = max_list[1]
